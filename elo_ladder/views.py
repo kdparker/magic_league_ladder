@@ -1,19 +1,16 @@
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from elo_ladder.models import Player, Match
 
 def rating_change(winner, loser):
-	if winner.match_wins + winner.match_losses < 5: K_W = 64
-	else: K_W = 32
+	K=64
 
-	if loser.match_wins + loser.match_losses < 5: K_L = 64
-	else: K_L = 32
+	EA = 1.0/(1+10**((loser.elo - winner.elo)/400.0))
+	EB = 1.0/(1+10**((winner.elo - loser.elo)/400.0))
 
-	EA = 1/(1+10**((winner.elo - loser.elo)/400))
-	EB = 1/(1+10**((loser.elo - winner.elo)/400))
-
-	change = (K_W*(1 - EA), K_L*(0 - EB))
+	change = (K*(1 - EA), K*(0 - EB))
 	return change
 
 def standings(request):
@@ -34,7 +31,7 @@ def make_report(request):
 			{'message': "You selected the same person to win and lose. Try again.", 'players': players})
 	else:
 		winner = get_object_or_404(Player, pk=winner_id)
-		loser = get_object_or_404(Player, pk=winner_id)
+		loser = get_object_or_404(Player, pk=loser_id)
 		change = rating_change(winner, loser)
 	
 		winner.elo += change[0]
