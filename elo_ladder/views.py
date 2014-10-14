@@ -18,14 +18,15 @@ def rating_change(winner, loser):
 
 def standings(request):
 	players = Player.objects.order_by('-elo')
-	return render(request, 'elo_ladder/standings.html', {'players'= players})
+	print "STANDINGS"
+	return render(request, 'elo_ladder/standings.html', {'players': players})
 
 def report_results(request):
 	players = Player.objects.all()
 	winner_id = request.POST['winner']
 	loser_id = request.POST['loser']
 	games = int(request.POST['games'])
-	if winner_id = loser_id:
+	if winner_id == loser_id:
 		return render(request, 'elo_ladder/report_results.html', 
 			{'message': "You selected the same person to win and lose. Try again.",})
 	else:
@@ -52,23 +53,3 @@ def report_results(request):
 		match.save()
 
 		return HttpResponseRedirect(reverse('standings'))
-
-
-
-def vote(request, question_id):
-    p = get_object_or_404(Question, pk=question_id)
-    try:
-        selected_choice = p.choice_set.get(pk=request.POST['choice'])
-    except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
-        return render(request, 'polls/detail.html', {
-            'question': p,
-            'error_message': "You didn't select a choice.",
-        })
-    else:
-        selected_choice.votes += 1
-        selected_choice.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return HttpResponseRedirect(reverse('polls:results', args=(p.id,)))
