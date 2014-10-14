@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Match Reporting{% end block %}
+
+{% block body %}
+{% message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'report_results' %}" method="post">
+{% csrf_token %}
+<select name="winner">
+{% for player in players %}
+  <option value={{ forloop.counter }}>{{ player.name }}</option>
+{% endfor %}
+</select>
+ beat 
+<select name="loser">
+{% for player in players %}
+  <option value={{ forloop.counter }}>{{ player.name }}</option>
+{% endfor %}
+</select>
+ in 
+<select name="games">
+  <option value="2">2</option>
+  <option value="3">3</option>
+</select>
+ games.
+<br>
+<input type="submit" value="Report" />
+</form>
+{% end block %}
