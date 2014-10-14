@@ -3,9 +3,9 @@
 {% block title %}Match Reporting{% endblock %}
 
 {% block body %}
-{% message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
 
-<form action="{% url 'report_results' %}" method="post">
+<form action="{% url 'make_report' %}" method="post">
 {% csrf_token %}
 <select name="winner">
 {% for player in players %}

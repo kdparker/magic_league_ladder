@@ -18,17 +18,20 @@ def rating_change(winner, loser):
 
 def standings(request):
 	players = Player.objects.order_by('-elo')
-	print "STANDINGS"
 	return render(request, 'elo_ladder/standings.html', {'players': players})
 
-def report_results(request):
+def report(request):
+	players = Player.objects.all()
+	return render(request, 'elo_ladder/report.html', {'players': players})
+
+def make_report(request):
 	players = Player.objects.all()
 	winner_id = request.POST['winner']
 	loser_id = request.POST['loser']
 	games = int(request.POST['games'])
 	if winner_id == loser_id:
-		return render(request, 'elo_ladder/report_results.html', 
-			{'message': "You selected the same person to win and lose. Try again.",})
+		return render(request, 'elo_ladder/report.html', 
+			{'message': "You selected the same person to win and lose. Try again.", 'players': players})
 	else:
 		winner = get_object_or_404(Player, pk=winner_id)
 		loser = get_object_or_404(Player, pk=winner_id)
