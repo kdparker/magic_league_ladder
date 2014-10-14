@@ -4,8 +4,9 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from elo_ladder.models import Player, Match
 
-def rating_change(winner, loser):
-	K=64
+def rating_change(winner, loser, games):
+	if games == 3: K=64
+	else: K =48
 
 	EA = 1.0/(1+10**((loser.elo - winner.elo)/400.0))
 	EB = 1.0/(1+10**((winner.elo - loser.elo)/400.0))
@@ -32,7 +33,7 @@ def make_report(request):
 	else:
 		winner = get_object_or_404(Player, pk=winner_id)
 		loser = get_object_or_404(Player, pk=loser_id)
-		change = rating_change(winner, loser)
+		change = rating_change(winner, loser, games)
 	
 		winner.elo += change[0]
 		winner.match_wins += 1
