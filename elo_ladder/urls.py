@@ -5,5 +5,7 @@ from elo_ladder import views
 urlpatterns = patterns('',
 	url(r'^$', views.standings, name='standings'),
 	url(r'^report/$', views.report, name='report'),
-	url(r'^report/make/$', views.make_report, name='make_report')
+	url(r'^report/make/$', views.make_report, name='make_report'),
+	url(r'^history/$', views.history, name='history'),
+	url(r'^players/(?P<player_id>\d+)/$', views.player_details, name='player_details'),
 )

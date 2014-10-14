@@ -18,9 +18,19 @@ def standings(request):
 	players = Player.objects.order_by('-elo')
 	return render(request, 'elo_ladder/standings.html', {'players': players})
 
+def history(request):
+	matches = Match.objects.order_by('-add_date')
+	return render(request, 'elo_ladder/history.html', {'matches': matches})
+
 def report(request):
 	players = Player.objects.order_by('id')
 	return render(request, 'elo_ladder/report.html', {'players': players})
+
+def player_details(request, player_id):
+	p = get_object_or_404(Player, pk=player_id)
+	player_matches = Match.objects.filter(winning_player=player_id) | Match.objects.filter(losing_player=player_id)
+	player_matches = player_matches.order_by('-add_date')
+	return render(request, 'elo_ladder/player_details.html', {'player': p, 'matches': player_matches})
 
 def make_report(request):
 	players = Player.objects.order_by('id')
@@ -33,6 +43,9 @@ def make_report(request):
 	else:
 		winner = get_object_or_404(Player, pk=winner_id)
 		loser = get_object_or_404(Player, pk=loser_id)
+		if winner.name == "Stan" or loser.name == "Stan":
+			return render(request, 'elo_ladder/report.html', 
+			{'message': "I simply do not believe that you played the legendary Stan.", 'players': players})
 		change = rating_change(winner, loser, games)
 	
 		winner.elo += change[0]

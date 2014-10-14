@@ -1,0 +1,23 @@
+{% extends "elo_ladder/base.html" %}
+
+{% block title %}{{ player.name }}{% endblock %}
+
+{% block body %}
+<strong>Name:</strong> {{ player.name }}<br>
+<strong>Rating:</strong> {{ player.elo }}<br>
+<strong>Match Record:</strong> {{ player.match_wins }}-{{ player.match_losses }}<br>
+<strong>Game Record:</strong> {{ player.game_wins }}-{{ player.game_losses }}<br>
+<strong>Matches:</strong><br><br>
+<table style="width:100%">
+  <tr>
+    <td><strong>Players</strong></td> 
+    <td><strong>Games</strong></td>
+  </tr>
+  {% for match in matches %}
+  <tr>
+    <td>{{ match.winning_player.name }} over {{ match.losing_player.name }}</td>
+    <td>{{ match.games_played }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
