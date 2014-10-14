@@ -6,7 +6,7 @@ from elo_ladder.models import Player, Match
 
 def rating_change(winner, loser, games):
 	if games == 3: K=64
-	else: K =48
+	else: K=48
 
 	EA = 1.0/(1+10**((loser.elo - winner.elo)/400.0))
 	EB = 1.0/(1+10**((winner.elo - loser.elo)/400.0))
@@ -19,11 +19,11 @@ def standings(request):
 	return render(request, 'elo_ladder/standings.html', {'players': players})
 
 def report(request):
-	players = Player.objects.all()
+	players = Player.objects.order_by('id')
 	return render(request, 'elo_ladder/report.html', {'players': players})
 
 def make_report(request):
-	players = Player.objects.all()
+	players = Player.objects.order_by('id')
 	winner_id = request.POST['winner']
 	loser_id = request.POST['loser']
 	games = int(request.POST['games'])
