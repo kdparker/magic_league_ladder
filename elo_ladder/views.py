@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from elo_ladder.models import Player, Match
 
 def rating_change(winner, loser, games):
-	if games == 3: K=64
+	if games == 2: K=64
 	else: K=48
 
 	EA = 1.0/(1+10**((loser.elo - winner.elo)/400.0))
