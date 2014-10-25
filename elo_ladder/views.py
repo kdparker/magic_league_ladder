@@ -30,6 +30,7 @@ def player_details(request, player_id):
 	p = get_object_or_404(Player, pk=player_id)
 	player_matches = Match.objects.filter(winning_player=player_id) | Match.objects.filter(losing_player=player_id)
 	player_matches = player_matches.order_by('-add_date')
+	player_matches = map((lambda x: (x.winning_player.id==int(player_id), x)), player_matches)
 	return render(request, 'elo_ladder/player_details.html', {'player': p, 'matches': player_matches})
 
 def make_report(request):
@@ -43,27 +44,34 @@ def make_report(request):
 	else:
 		winner = get_object_or_404(Player, pk=winner_id)
 		loser = get_object_or_404(Player, pk=loser_id)
-		if winner.name == "Stan" or loser.name == "Stan":
-			return render(request, 'elo_ladder/report.html', 
-			{'message': "I simply do not believe that you played the legendary Stan.", 'players': players})
 		change = rating_change(winner, loser, games)
 	
 		winner.elo += change[0]
 		winner.match_wins += 1
 		winner.game_wins += 2
 		winner.game_losses += games - 2
-		winner.save()
+		winner.game_win_percent = float(winner.game_wins) / float(winner.game_wins + winner.game_losses) * 100.0
+		winner.match_win_percent = float(winner.match_wins) / float(winner.match_wins + winner.match_losses) * 100.0
 
 		loser.elo += change[1]
 		loser.match_losses += 1
 		loser.game_wins += games - 2
 		loser.game_losses += 2
-		loser.save()
+		loser.game_win_percent = float(loser.game_wins) / float(loser.game_wins + loser.game_losses) * 100.0
+		loser.match_win_percent = float(loser.match_wins) / float(loser.match_wins + loser.match_losses) * 100.0
+
 
 		match = Match(add_date = timezone.now(), 
 					  winning_player = winner, 
 					  losing_player = loser, 
-					  games_played=games)
+					  games_played=games,
+					  losers_prev_elo=loser.elo-change[1],
+					  winners_prev_elo=winner.elo-change[0],
+					  losers_new_elo=loser.elo,
+					  winners_new_elo=winner.elo)
+		
+		loser.save()
+		winner.save()
 		match.save()
 
 		return HttpResponseRedirect(reverse('standings'))

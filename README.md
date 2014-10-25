@@ -1,8 +1,6 @@
-Magic League Ladder
+Web Ladder
 ===================
 
-A django project to create a ladder system for the MTG league run in our house.
-Being morphed in to a more generalised format: https://github.com/kdparker/web_ladder
-The magic version is being kept here since I just don't want to deal with changing anything with already existing data if I don't have to.
+A django project to create a ladder system for leagues.
 
-Project is hosted on heroku at: http://erbmagicleague.herokuapp.com/
+A generalisation of: https://github.com/kdparker/magic_league_ladder

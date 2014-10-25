@@ -7,16 +7,23 @@
 <strong>Rating:</strong> {{ player.elo }}<br>
 <strong>Match Record:</strong> {{ player.match_wins }}-{{ player.match_losses }}<br>
 <strong>Game Record:</strong> {{ player.game_wins }}-{{ player.game_losses }}<br>
-<strong>Matches:</strong><br><br>
+<strong>Win percentage:</strong> {{ player.match_win_percent }}%<br>
+<strong>Game Win percentage:</strong>{{ player.game_win_percent }}%<br>
+<strong>Matches:</strong><br>
 <table style="width:100%">
   <tr>
     <td><strong>Players</strong></td> 
     <td><strong>Games</strong></td>
+    <td><strong>Date Reported</strong></td>
   </tr>
-  {% for match in matches %}
+  {% for did_win, match in matches %}
   <tr>
-    <td>{{ match.winning_player.name }} over {{ match.losing_player.name }}</td>
+      <td>
+    {% if did_win %}<font color="green">
+    {% else %}      <font color="red">
+    {% endif %}{{ match.winning_player.name }} over {{ match.losing_player.name }}</font></td>
     <td>{{ match.games_played }}</td>
+    <td>{{ match.add_date }}</td>
   </tr>
   {% endfor %}
 </table>

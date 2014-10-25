@@ -6,6 +6,8 @@ class Player(models.Model):
 	game_losses = models.IntegerField(default=0)
 	match_wins = models.IntegerField(default=0)
 	match_losses = models.IntegerField(default=0)
+	match_win_percent = models.DecimalField(default=0, max_digits=5, decimal_places=2)
+	game_win_percent = models.DecimalField(default=0, max_digits=5, decimal_places=2)
 	elo = models.IntegerField(default=1000)
 
 	def __unicode__(self):
@@ -16,3 +18,7 @@ class Match(models.Model):
 	winning_player = models.ForeignKey(Player, related_name="match_winning_player")
 	losing_player = models.ForeignKey(Player, related_name="match_losing_player")
 	games_played = models.IntegerField(default=2)
+	losers_prev_elo = models.IntegerField(default=0)
+	winners_prev_elo = models.IntegerField(default=0)
+	losers_new_elo = models.IntegerField(default=0)
+	winners_new_elo = models.IntegerField(default=0)
