@@ -3,18 +3,29 @@
 {% block title %}Standings{% endblock %}
 
 {% block body %}
-<table style="width:100%">
-  <tr>
-    <th>Player</th>
-    <th>Rating</th> 
-    <th>Match Wins/Losses</th>
-  </tr>
-  {% for player in players %}
-  <tr>
-  	<th><a href="{% url 'player_details' player.id %}">{{ player.name }}</a></th>
-  	<th>{{ player.elo }}</th>
-  	<th>{{ player.match_wins }}-{{player.match_losses }}</th>
-  </tr>
+{% if messages %}
+  {% for message in messages %}
+    <p><strong>{{ message }}</strong></p>
   {% endfor %}
+{% endif %}
+<table>
+  <thead>
+    <tr>
+      <th class="table-title" colspan="3">Current Standings</th>
+    <tr>
+      <th>Player</th>
+      <th>Rating</th> 
+      <th>Match Wins/Losses</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for player in players %}
+      <tr>
+  	   <td><a href="{% url 'player_details' player.id %}">{{ player.name }}</a></td>
+  	   <td>{{ player.elo }}</td>
+  	   <td>{{ player.match_wins }}-{{player.match_losses }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endblock %}

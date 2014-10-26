@@ -2,10 +2,11 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 from elo_ladder.models import Player, Match
 
 def rating_change(winner, loser, games):
-	if games == 2: K=64
+	if games == 2: K=60
 	else: K=48
 
 	EA = 1.0/(1+10**((loser.elo - winner.elo)/400.0))
@@ -20,6 +21,7 @@ def standings(request):
 
 def history(request):
 	matches = Match.objects.order_by('-add_date')
+	matches = map(lambda x: (x, int(x.winners_new_elo) - int(x.winners_prev_elo)), matches)
 	return render(request, 'elo_ladder/history.html', {'matches': matches})
 
 def report(request):
@@ -32,6 +34,7 @@ def player_details(request, player_id):
 	player_matches = player_matches.order_by('-add_date')
 	player_matches = map((lambda x: (x.winning_player.id==int(player_id), x)), player_matches)
 	return render(request, 'elo_ladder/player_details.html', {'player': p, 'matches': player_matches})
+	
 
 def make_report(request):
 	players = Player.objects.order_by('id')
@@ -39,8 +42,8 @@ def make_report(request):
 	loser_id = request.POST['loser']
 	games = int(request.POST['games'])
 	if winner_id == loser_id:
-		return render(request, 'elo_ladder/report.html', 
-			{'message': "You selected the same person to win and lose. Try again.", 'players': players})
+		messages.error(request, "You selected the same person to win and lose. Try again.")
+		return render(request, 'elo_ladder/report.html', {'players': players})
 	else:
 		winner = get_object_or_404(Player, pk=winner_id)
 		loser = get_object_or_404(Player, pk=loser_id)
@@ -74,4 +77,5 @@ def make_report(request):
 		winner.save()
 		match.save()
 
+		messages.success(request, "Submission successful! " + winner.name + " gained " + str(int(change[0])) + " rating, and " + loser.name + " lost " + str(int(-1*change[1])) + " rating.")
 		return HttpResponseRedirect(reverse('standings'))

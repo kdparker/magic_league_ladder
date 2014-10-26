@@ -1,13 +1,20 @@
-<html>
+<DOCTYPE! html>
+  <html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
 
-    <head>
-        <title>{% block title %}{% endblock %}</title>
-    </head>
-<a href="{% url 'standings' %}">Home/Standings</a>    <a href="{% url 'report' %}">Report a Match</a>    <a href="{% url 'history' %}">Match History</a>
-<br>
-<br>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
-
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+    <div id="header">
+      <a href="{% url 'standings' %}">Home/Standings</a>
+      <a href="{% url 'report' %}">Report a Match</a>    
+      <a href="{% url 'history' %}">Match History</a>
+    </div>
+    <div id="content">
+      {% block body %}{% endblock %}
+    </div>
+  </body>
 </html>

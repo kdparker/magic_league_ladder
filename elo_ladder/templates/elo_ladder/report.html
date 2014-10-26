@@ -3,7 +3,12 @@
 {% block title %}Match Reporting{% endblock %}
 
 {% block body %}
-{% if message %}<p><strong>{{ message }}</strong></p>{% endif %}
+<div id="report-content">
+{% if messages %}
+  {% for message in messages %}
+    <p><strong>{{ message }}</strong></p>
+  {% endfor %}
+{% endif %}
 
 <form action="{% url 'make_report' %}" method="post">
 {% csrf_token %}
@@ -23,8 +28,7 @@
   <option value="2">2</option>
   <option value="3">3</option>
 </select>
- games.
-<br>
-<input type="submit" value="Report" />
+ games.                <input type="submit" value="Report" />
 </form>
+</div>
 {% endblock %}

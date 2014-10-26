@@ -1,18 +1,30 @@
 {% extends "elo_ladder/base.html" %}
-
 {% block title %}Match History{% endblock %}
 
 {% block body %}
-<table style="width:100%">
+<table>
+  <thead>
+    <tr>
+      <th class="table-title" colspan="4">Match History</th>
+    </tr>
+    <tr>
+      <th>Players</th>
+      <th>Games</th>
+      <th>Points Transfered</th>
+      <th>Date Reported</th>
+    </tr>
+  {% for match, rating_change in matches %}
   <tr>
-    <td><strong>Players</strong></td> 
-    <td><strong>Games</strong></td>
-    <td><strong>Date Reported</strong></td>
-  </tr>
-  {% for match in matches %}
-  <tr>
-    <td>{{ match.winning_player.name }} over {{ match.losing_player.name }}</td>
+    <td>{{ match.winning_player.name }} ({{ match.winners_prev_elo }}) over 
+    {{ match.losing_player.name }} ({{ match.losers_prev_elo }})</td>
     <td>{{ match.games_played }}</td>
+    <td>
+      {% if rating_change != 0 %}
+        {{ rating_change }}
+      {% else %}
+        N/A
+      {% endif %}
+    </td>
     <td>{{ match.add_date }}</td>
   </tr>
   {% endfor %}
