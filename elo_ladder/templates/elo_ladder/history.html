@@ -13,14 +13,14 @@
       <th>Points Transfered</th>
       <th>Date Reported</th>
     </tr>
-  {% for match, rating_change in matches %}
+  {% for match in matches %}
   <tr>
     <td>{{ match.winning_player.name }} ({{ match.winners_prev_elo }}) over 
     {{ match.losing_player.name }} ({{ match.losers_prev_elo }})</td>
     <td>{{ match.games_played }}</td>
     <td>
-      {% if rating_change != 0 %}
-        {{ rating_change }}
+      {% if match.rating_change != 0 %}
+        {{ match.rating_change }}
       {% else %}
         N/A
       {% endif %}
