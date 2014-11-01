@@ -57,17 +57,25 @@ def make_report(request):
 		return render(request, 'elo_ladder/report.html', {'players': players})
 	else:
 		player_objects = Player.objects.all()
+		print winner_name
+		print loser_name
 		print player_objects
+		print "Winner comps:"
 
 		for object in player_objects:
+			print winner_name + " - " + object.name
 			if winner_name == object.name:
+				print "WINNER FOUND"
 				winner = object
 				break
 		else:
 			raise Http404
 
+		print "Loser comps:"
 		for object in player_objects:
+			print loser_name + " - " + '"' + object.name + '"'
 			if loser_name == object.name:
+				print "Loser Found!"
 				loser = object
 				break
 		else:
