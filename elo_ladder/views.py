@@ -57,6 +57,7 @@ def make_report(request):
 		return render(request, 'elo_ladder/report.html', {'players': players})
 	else:
 		player_objects = Player.objects.all()
+		print player_objects
 
 		for object in player_objects:
 			if winner_name == object.name:
