@@ -50,7 +50,7 @@ class Match(models.Model):
 		"""
 		Example: Winner over Loser in 2 on Oct 21, 10:32 pm
 		"""
-		return self.winning_player.name + " over " + self.losing_player.name + " in " + str(self.games_played) + " on " + self.add_date
+		return self.winning_player.name + " over " + self.losing_player.name + " in " + str(self.games_played) + " on " + str(self.add_date)
 
 	def rating_change(self):
 		"""

@@ -56,8 +56,8 @@ def make_report(request):
 		messages.error(request, "You selected the same person to win and lose. Try again.")
 		return render(request, 'elo_ladder/report.html', {'players': players})
 	else:
-		winner = get_object_or_404(Player, pk=winner_id)
-		loser = get_object_or_404(Player, pk=loser_id)
+		winner = get_object_or_404(Player, name=winner_id)
+		loser = get_object_or_404(Player, name=loser_id)
 		change = rating_change(winner, loser, games)
 	
 		winner.elo += change
