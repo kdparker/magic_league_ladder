@@ -1,6 +1,6 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.utils import timezone
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from elo_ladder.models import Player, Match
@@ -49,15 +49,28 @@ def make_report(request):
 	   Returns back to report page if user gives invalid input (duplicate players).
 	   After changes are done in database, send the user back to standings with a message regarding successful submission."""
 	players = Player.objects.order_by('id')
-	winner_id = request.POST['winner']
-	loser_id = request.POST['loser']
+	winner_name = request.POST['winner']
+	loser_name = request.POST['loser']
 	games = int(request.POST['games'])
-	if winner_id == loser_id:
+	if winner_name == loser_name:
 		messages.error(request, "You selected the same person to win and lose. Try again.")
 		return render(request, 'elo_ladder/report.html', {'players': players})
 	else:
-		winner = get_object_or_404(Player, name=winner_id)
-		loser = get_object_or_404(Player, name=loser_id)
+		player_objects = Player.objects.all()
+
+		for object in player_objects:
+			if winner_name == object.name:
+				winner = object
+				break
+		else:
+			raise Http404
+
+		for object in player_objects:
+			if loser_name == object.name:
+				loser = object
+				break
+		else:
+			raise Http404
 		change = rating_change(winner, loser, games)
 	
 		winner.elo += change
