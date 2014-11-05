@@ -14,13 +14,13 @@
 {% csrf_token %}
 <select name="winner">
 {% for player in players %}
-  <option value={{ player.id }}>{{ player.name }}</option>
+  <option value={{ player.id }}>{{ player.get_name }}</option>
 {% endfor %}
 </select>
  beat 
 <select name="loser">
 {% for player in players %}
-  <option value={{ player.id }}>{{ player.name }}</option>
+  <option value={{ player.id }}>{{ player.get_name }}</option>
 {% endfor %}
 </select>
  in 

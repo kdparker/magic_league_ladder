@@ -1,9 +1,9 @@
 {% extends "elo_ladder/base.html" %}
 
-{% block title %}{{ player.name }}{% endblock %}
+{% block title %}{{ player.get_name }}{% endblock %}
 
 {% block body %}
-<strong>Name:</strong> {{ player.name }}<br>
+<strong>Name:</strong> {{ player.get_name }}<br>
 <strong>Rating:</strong> {{ player.elo }}<br>
 <strong>Match Record:</strong> {{ player.match_wins }}-{{ player.match_losses }}<br>
 <strong>Game Record:</strong> {{ player.game_wins }}-{{ player.game_losses }}<br>
@@ -26,7 +26,7 @@
             {% if did_win %}<div class="won">
             {% else %}      <div class="lost">
             {% endif %}
-            {{ match.winning_player.name }} over {{ match.losing_player.name }}</div></td>
+            {{ match.winning_player.get_name }} over {{ match.losing_player.get_name }}</div></td>
           <td>{{ match.games_played }}</td>
           <td>{{ match.add_date }}</td>
       </tr>

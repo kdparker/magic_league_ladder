@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, render_to_response
 from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from elo_ladder.models import Player, Match
+from elo_ladder.forms import RegisterForm
 
 def rating_change(winner, loser, games):
 	""" elo rating calculation according to this page: http://en.wikipedia.org/wiki/Elo_rating_system
@@ -44,6 +45,30 @@ def player_details(request, player_id):
 
 	return render(request, 'elo_ladder/player_details.html', {'player': p, 'matches': player_matches})
 
+def register(request):
+	"""Page to allow registration from user, using generic RegisterForm from django's library"""
+
+	registered = False
+
+	if request.method == 'POST':
+		register_form = RegisterForm(data=request.POST)
+		if register_form.is_valid():
+			new_user = register_form.save()
+
+			new_user.set_password(new_user.password)
+			new_user.save()
+
+			player = Player(user=new_user)
+			player.save()
+
+			registered = True
+		else:
+			print register_form.errors
+	else:
+		register_form = RegisterForm()
+
+	return render(request, 'elo_ladder/register.html', {'register_form': register_form, 'registered': registered})
+
 def make_report(request):
 	"""Calculates change in rating based on data received from form. 
 	   Returns back to report page if user gives invalid input (duplicate players).
@@ -83,6 +108,6 @@ def make_report(request):
 		winner.save()
 		match.save()
 
-		messages.success(request, "Submission successful! " + winner.name + " gained " + str(match.rating_change()) + " rating," + \
-			" and " + loser.name + " lost " + str(match.rating_change()) + " rating.")
+		messages.success(request, "Submission successful! " + winner.get_name() + " gained " + str(match.rating_change()) + " rating," + \
+			" and " + loser.get_name() + " lost " + str(match.rating_change()) + " rating.")
 		return HttpResponseRedirect(reverse('standings'))

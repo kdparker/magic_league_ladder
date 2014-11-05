@@ -1,35 +1,41 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Player(models.Model):
 	"""
-	Model used to track a specific player. 
+	Model used to track a specific player. Extends user with a one to one field.
 	"""
 
 	STARTING_RATING = 1000 # Default elo value for all players in league (new players start with this rating)
 
-	name = models.CharField(max_length=200)
+	user = models.OneToOneField(User, default=0)
 	game_wins = models.IntegerField(default=0)
 	game_losses = models.IntegerField(default=0)
 	match_wins = models.IntegerField(default=0)
 	match_losses = models.IntegerField(default=0)
 	elo = models.IntegerField(default=STARTING_RATING)
 
+	def get_name(self):
+		return self.user.first_name + " " + self.user.last_name[0]
+
 	def __unicode__(self):
 		"""
-		Example: Keegan - 1232
+		Example: Keegan P - 1232
 		"""
-		return self.name + " - " + str(self.elo)
+		return self.get_name() + " - " + str(self.elo)
 
 	def game_win_percent(self):
 		""""
 		Returns a formatted string as a percentage of games won by player
 		"""
+		if (self.game_wins + self.game_losses == 0): return "N/A"
 		return '{:.2%}'.format(float(self.game_wins) / float(self.game_wins + self.game_losses))
 
 	def match_win_percent(self):
 		""""
 		Returns a formatted string as a percentage of matches won by player
 		"""
+		if (self.match_wins + self.match_losses == 0): return "N/A"
 		return '{:.2%}'.format(float(self.match_wins) / float(self.match_wins + self.match_losses))
 
 class Match(models.Model):
@@ -45,12 +51,13 @@ class Match(models.Model):
 	winners_prev_elo = models.IntegerField(default=0)
 	losers_new_elo = models.IntegerField(default=0)
 	winners_new_elo = models.IntegerField(default=0)
+	reporter = models.ForeignKey(User, default=0)
 
 	def __unicode__(self):
 		"""
 		Example: Winner over Loser in 2 on Oct 21, 10:32 pm
 		"""
-		return self.winning_player.name + " over " + self.losing_player.name + " in " + str(self.games_played) + " on " + str(self.add_date)
+		return self.winning_player.get_name() + " over " + self.losing_player.get_name() + " in " + str(self.games_played) + " on " + str(self.add_date)
 
 	def rating_change(self):
 		"""

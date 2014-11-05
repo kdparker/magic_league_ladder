@@ -15,8 +15,8 @@
     </tr>
   {% for match in matches %}
   <tr>
-    <td>{{ match.winning_player.name }} ({{ match.winners_prev_elo }}) over 
-    {{ match.losing_player.name }} ({{ match.losers_prev_elo }})</td>
+    <td>{{ match.winning_player.get_name }} ({{ match.winners_prev_elo }}) over 
+    {{ match.losing_player.get_name }} ({{ match.losers_prev_elo }})</td>
     <td>{{ match.games_played }}</td>
     <td>
       {% if match.rating_change != 0 %}

@@ -1,0 +1,19 @@
+{% extends "elo_ladder/base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+  {% if registered %}
+    <strong>Thank you for registering! Your starting elo is 1000.</strong>
+  {% else %}
+    <strong>Register here!</strong><br />
+
+        <form id="register_form" method="post" action="{% url 'register' %}"
+                enctype="multipart/form-data">
+
+            {% csrf_token %}
+            {{ register_form.as_p }}
+            <input type="submit" name="submit" value="Register" />
+        </form>
+  {% endif %}
+{% endblock %}
