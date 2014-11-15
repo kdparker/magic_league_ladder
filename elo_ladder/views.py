@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from elo_ladder.models import Player, Match
 from elo_ladder.forms import RegisterForm
 
@@ -69,45 +71,82 @@ def register(request):
 
 	return render(request, 'elo_ladder/register.html', {'register_form': register_form, 'registered': registered})
 
+def user_login(request):
+		"""Page to allow logging in"""
+
+		if request.method == 'POST':
+			username = request.POST['username']
+			password = request.POST['password']
+
+			user = authenticate(username=username, password=password)
+
+			if user:
+				if user.is_active:
+					login(request, user)
+					messages.success(request, "Welcome to the Erb Street Magic League, " + user.first_name)
+					return HttpResponseRedirect(reverse('standings'))
+				else:
+					messages.error(request, "This account is disabled, try again.")
+					return render(request, 'elo_ladder/login.html')
+			else:
+				messages.error(request, "Either your username or password is incorrect. Try again.")
+				return render(request, 'elo_ladder/login.html')
+		else:
+			return render(request, 'elo_ladder/login.html')
+
+@login_required
+def user_logout(request):
+	logout(request)
+	return HttpResponseRedirect(reverse('standings'))
+
 def make_report(request):
 	"""Calculates change in rating based on data received from form. 
 	   Returns back to report page if user gives invalid input (duplicate players).
 	   After changes are done in database, send the user back to standings with a message regarding successful submission."""
 	players = Player.objects.order_by('id')
-	winner_id = request.POST['winner']
-	loser_id = request.POST['loser']
-	games = int(request.POST['games'])
-	if winner_id == loser_id:
-		messages.error(request, "You selected the same person to win and lose. Try again.")
-		return render(request, 'elo_ladder/report.html', {'players': players})
-	else:
-		winner = get_object_or_404(Player, pk=winner_id)
-		loser = get_object_or_404(Player, pk=loser_id)
-		change = rating_change(winner, loser, games)
+	if request.user.is_authenticated():
+		winner_id = request.POST['winner']
+		loser_id = request.POST['loser']
+		games = int(request.POST['games'])
+		if winner_id == loser_id:
+			messages.error(request, "You selected the same person to win and lose. Try again.")
+			return render(request, 'elo_ladder/report.html', {'players': players})
+		else:
+			winner = get_object_or_404(Player, pk=winner_id)
+			loser = get_object_or_404(Player, pk=loser_id)
+			if not (winner.user == request.user or loser.user == request.user):
+				messages.error(request, "You can only report a match that you are involved in.")
+				return render(request, 'elo_ladder/report.html', {'players': players})
+			else:
+				change = rating_change(winner, loser, games)
 	
-		winner.elo += change
-		winner.match_wins += 1
-		winner.game_wins += 2
-		winner.game_losses += games - 2
+				winner.elo += change
+				winner.match_wins += 1
+				winner.game_wins += 2
+				winner.game_losses += games - 2
 
-		loser.elo -= change
-		loser.match_losses += 1
-		loser.game_wins += games - 2
-		loser.game_losses += 2
+				loser.elo -= change
+				loser.match_losses += 1
+				loser.game_wins += games - 2
+				loser.game_losses += 2
 
-		match = Match(add_date = timezone.now(), 
-					  winning_player = winner, 
-					  losing_player = loser, 
-					  games_played=games,
-					  losers_prev_elo=loser.elo+change,
-					  winners_prev_elo=winner.elo-change,
-					  losers_new_elo=loser.elo,
-					  winners_new_elo=winner.elo)
+				match = Match(add_date = timezone.now(), 
+					  		winning_player = winner, 
+					  		losing_player = loser, 
+					  		games_played=games,
+					  		losers_prev_elo=loser.elo+change,
+					  		winners_prev_elo=winner.elo-change,
+					  		losers_new_elo=loser.elo,
+					  		winners_new_elo=winner.elo,
+					  		reporter=request.user)
 		
-		loser.save()
-		winner.save()
-		match.save()
+				loser.save()
+				winner.save()
+				match.save()
 
-		messages.success(request, "Submission successful! " + winner.get_name() + " gained " + str(match.rating_change()) + " rating," + \
-			" and " + loser.get_name() + " lost " + str(match.rating_change()) + " rating.")
-		return HttpResponseRedirect(reverse('standings'))
+				messages.success(request, "Submission successful! " + winner.get_name() + " gained " + str(match.rating_change()) + " rating," + \
+					" and " + loser.get_name() + " lost " + str(match.rating_change()) + " rating.")
+				return HttpResponseRedirect(reverse('standings'))
+	else:
+		messages.error(request, "You must be logged in to report a match.")
+		return render(request, 'elo_ladder/report.html', {'players': players})

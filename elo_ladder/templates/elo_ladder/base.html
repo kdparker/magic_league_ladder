@@ -12,9 +12,15 @@
       <a href="{% url 'standings' %}">Home/Standings</a>
       <a href="{% url 'report' %}">Report a Match</a>    
       <a href="{% url 'history' %}">Match History</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'player_details' user.player.id %}">Profile</a>
+      {% else %}
+        <a href="{% url 'login' %}">Login</a>
+      {% endif %}
     </div>
     <div id="content">
       {% block body %}{% endblock %}
+      {% if user.is_authenticated %}<br><a href="{% url 'logout' %}">Logout</a>{% endif %}
     </div>
   </body>
 </html>
