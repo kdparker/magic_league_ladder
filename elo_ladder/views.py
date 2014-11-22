@@ -1,4 +1,5 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, render_to_response
+from django.template import RequestContext
 from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -94,26 +95,28 @@ def register(request):
 	return render(request, 'elo_ladder/register.html', {'registered': registered})
 
 def user_login(request):
-		"""Page to allow logging in"""
-		if request.method == 'POST':
-			username = request.POST['username']
-			password = request.POST['password']
+	"""Page to allow logging in"""
+	context = RequestContext(request)
 
-			user = authenticate(username=username, password=password)
+	if request.method == 'POST':
+		username = request.POST['username']
+		password = request.POST['password']
 
-			if user:
-				if user.is_active:
-					login(request, user)
-					messages.success(request, "Welcome to the Erb Street Magic League, " + user.first_name)
-					return HttpResponseRedirect(reverse('standings'))
-				else:
-					messages.error(request, "This account is disabled, try again.")
-					return render(request, 'elo_ladder/login.html')
+		user = authenticate(username=username, password=password)
+
+		if user:
+			if user.is_active:
+				login(request, user)
+				messages.success(request, "Welcome to the Erb Street Magic League, " + user.first_name)
+				return HttpResponseRedirect(reverse('standings'))
 			else:
-				messages.error(request, "Either your username or password is incorrect. Try again.")
+				messages.error(request, "This account is disabled, try again.")
 				return render(request, 'elo_ladder/login.html')
 		else:
+			messages.error(request, "Either your username or password is incorrect. Try again.")
 			return render(request, 'elo_ladder/login.html')
+	else:
+		return render_to_response('elo_ladder/login.html', {}, context)
 
 @login_required
 def user_logout(request):
