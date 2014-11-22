@@ -120,6 +120,7 @@ def user_logout(request):
 	logout(request)
 	return HttpResponseRedirect(reverse('standings'))
 
+@login_required
 def make_report(request):
 	"""Calculates change in rating based on data received from form. 
 	   Returns back to report page if user gives invalid input (duplicate players).
