@@ -2,11 +2,8 @@
 {% block title %}Match History{% endblock %}
 
 {% block body %}
-<table>
+<table class ="table table-striped table-bordered table-hover">
   <thead>
-    <tr>
-      <th class="table-title" colspan="4">Match History</th>
-    </tr>
     <tr>
       <th>Players</th>
       <th>Games</th>
@@ -14,7 +11,13 @@
       <th>Date Reported</th>
     </tr>
   {% for match in matches %}
+    {% if user.is_authenticated and user.player.get_name == match.winning_player.get_name %}
+  <tr class="success">
+    {% elif user.is_authenticated and user.player.get_name == match.winning_player.get_name %}
+  <tr class="danger">
+    {% else %}
   <tr>
+    {% endif %}
     <td>{{ match.winning_player.get_name }} ({{ match.winners_prev_elo }}) over 
     {{ match.losing_player.get_name }} ({{ match.losers_prev_elo }})</td>
     <td>{{ match.games_played }}</td>
