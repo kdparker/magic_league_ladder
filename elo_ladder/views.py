@@ -5,8 +5,9 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from elo_ladder.models import Player, Match
-from elo_ladder.forms import RegisterForm
+import re
 
 def rating_change(winner, loser, games):
 	""" elo rating calculation according to this page: http://en.wikipedia.org/wiki/Elo_rating_system
@@ -19,6 +20,23 @@ def rating_change(winner, loser, games):
 
 	change = K*(1 - EA)
 	return change
+
+def is_valid_entry(entry):
+	"""Returns if a given entry is a valid input"""
+	return (entry and len(entry) <= 30 and len(entry) >= 4 and re.match('^[A-Za-z\-_@0-9.]*$', entry))
+
+def is_valid_user(info):
+	"""Returns if a given user_creation info is valid. If not, gives an appropriate message alongside"""
+	if not is_valid_entry(info['username']): return (False, "Please enter a valid username")
+	if User.objects.filter(username=info['username']): return (False, "Username taken, please select another")
+	if not is_valid_entry(info['password']): return (False, "Please enter a valid password")
+	if not is_valid_entry(info['confirm_password']): return (False, "Please confirm your password")
+	if not (info['password'] == info['confirm_password']): return (False, "Your passwords did not match.")
+	if not is_valid_entry(info['email']): return (False, "Please enter a valid e-mail")
+	if User.objects.filter(username=info['email']): return (False, "Email already in use")
+	if not is_valid_entry(info['first_name']): return (False, "Please enter a valid first name")
+	if not is_valid_entry(info['last_name']): return (False, "Please enter a valid last name")
+	return (True, "")
 
 def standings(request):
 	"""View to send standings data based on template in elo_ladder/standings.html"""
@@ -53,11 +71,16 @@ def register(request):
 	registered = False
 
 	if request.method == 'POST':
-		register_form = RegisterForm(data=request.POST)
-		if register_form.is_valid():
-			new_user = register_form.save()
+		info ={"username": request.POST['username'],"password": request.POST['password'], "confirm_password": request.POST['confirm_password'],
+				"email": request.POST['email'],"first_name": request.POST['first_name'],"last_name": request.POST['last_name']}
+		processed_info = is_valid_user(info)
+		if processed_info[0]:
+			new_user = User.objects.create_user(username=info['username'],
+												email=info['email'],
+												first_name=info['first_name'],
+												last_name=info['last_name'])
 
-			new_user.set_password(new_user.password)
+			new_user.set_password(info['password'])
 			new_user.save()
 
 			player = Player(user=new_user)
@@ -65,15 +88,12 @@ def register(request):
 
 			registered = True
 		else:
-			print register_form.errors
-	else:
-		register_form = RegisterForm()
+			messages.error(request, processed_info[1])
 
-	return render(request, 'elo_ladder/register.html', {'register_form': register_form, 'registered': registered})
+	return render(request, 'elo_ladder/register.html', {'registered': registered})
 
 def user_login(request):
 		"""Page to allow logging in"""
-
 		if request.method == 'POST':
 			username = request.POST['username']
 			password = request.POST['password']
