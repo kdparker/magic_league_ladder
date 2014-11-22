@@ -116,7 +116,7 @@ def user_login(request):
 			messages.error(request, "Either your username or password is incorrect. Try again.")
 			return render(request, 'elo_ladder/login.html')
 	else:
-		return render_to_response('elo_ladder/login.html', {'players': players}, context)
+		return render_to_response('elo_ladder/login.html', {}, context)
 
 @login_required
 def user_logout(request):
