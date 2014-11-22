@@ -3,13 +3,6 @@
 {% block title %}Match Reporting{% endblock %}
 
 {% block body %}
-<div id="report-content">
-{% if messages %}
-  {% for message in messages %}
-    <p><strong>{{ message }}</strong></p>
-  {% endfor %}
-{% endif %}
-
 <form action="{% url 'make_report' %}" method="post">
 {% csrf_token %}
 <select name="winner">
@@ -30,7 +23,6 @@
 </select>
  games.<br /><br /><button type="submit" class="btn btn-lg">Report</button>
 </form>
-</div>
 {% endblock %}
 
 <div class="btn-group">

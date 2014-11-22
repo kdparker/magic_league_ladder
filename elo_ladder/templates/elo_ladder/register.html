@@ -7,11 +7,6 @@
   {% if registered %}
     <strong>Thank you for registering! Your starting elo is 1000.</strong>
   {% else %}
-    {% if messages %}
-      {% for message in messages %}
-        <p><strong>{{ message }}</strong></p>
-      {% endfor %}
-    {% endif %}
 
         <form id="register_form" method="post" action="{% url 'register' %}"
                 enctype="multipart/form-data">
