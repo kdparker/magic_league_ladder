@@ -48,6 +48,7 @@ def history(request):
 	matches = Match.objects.order_by('-add_date')
 	return render(request, 'elo_ladder/history.html', {'matches': matches})
 
+@login_required
 def report(request):
 	"""View to send data to form page with template in elo_ladder/report.html"""
 	players = Player.objects.order_by('id')
