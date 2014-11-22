@@ -4,11 +4,6 @@
 {% block login %}class="active"{% endblock %}
 
 {% block body %}
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-danger" role="alert">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
   <form id="login_form" method="post" action="{% url 'login' %}">
     {% csrf_token %}
     <div class="input-group input-group-lg">

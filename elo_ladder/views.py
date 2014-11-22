@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, render_to_response
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse

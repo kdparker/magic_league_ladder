@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 # Quick-start development settings - unsuitable for production
@@ -22,7 +22,7 @@ SECRET_KEY = 'qiw)(8ttj1(ydn0u_6on7ge!sno)@m+3uj3$bu0q*y#jzungxn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 
 # Application definition
@@ -86,18 +86,16 @@ USE_TZ = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = "[*]"
 
 # Static asset configuration
-import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = 'staticfiles'
-STATIC_URL = '/static/'
-
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 STATIC_URL = '/static/'
+
+LOGIN_URL = '/login'
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
