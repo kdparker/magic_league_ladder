@@ -8,5 +8,4 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('elo_ladder.urls')),
-    url(r'^/', include('elo_ladder.urls'))
 )
