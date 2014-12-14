@@ -105,3 +105,12 @@ LOGIN_URL = '/login'
 # https://warehouse.python.org/project/whitenoise/
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+SIDE_ID = 1
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'erbmagicleague@gmail.com'
+EMAIL_HOST_PASSWORD = 'erb magic league'
+DEFAULT_FROM_EMAIL = 'erbmagicleague@gmail.com'

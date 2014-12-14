@@ -1,0 +1,16 @@
+{% extends "elo_ladder/base.html" %}
+
+{% block title %}Reset Password{% endblock %}
+
+{% block body %}
+  <form id="reset_form" method="post" action="{% url 'reset' reset_code %}">
+    {% csrf_token %}
+    <div class="input-group input-group-lg">
+      <input name="password" type="password" class="form-control" placeholder="Password">
+    <br />
+      <input name="confirm_password" type="password" class="form-control" placeholder="Confirm Password">
+    </div>
+    <br />
+    <button type="submit" class="btn btn-lg">Reset Password</button>
+  </form>
+{% endblock %}

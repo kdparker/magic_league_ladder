@@ -1,13 +1,17 @@
+from uuid import uuid4
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils import timezone
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from elo_ladder.models import Player, Match
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+from django.conf import settings
+from elo_ladder.models import Player, Match, ResetPage
 import re
 
 def rating_change(winner, loser, games):
@@ -175,3 +179,85 @@ def make_report(request):
 	else:
 		messages.error(request, "You must be logged in to report a match.")
 		return render(request, 'elo_ladder/report.html', {'players': players})
+
+def get_reset_code():
+	"""
+	Returns a unique reset password page code unused elsewhere in the table
+	"""
+	code = uuid4().hex.upper()
+	while ResetPage.objects.filter(code=code):
+		code = uuid4().hex.upper()
+	return code
+
+def send_reset_email(request, user):
+	"""
+	Creates and sends a reset password email to user's email
+	"""
+	new_page = ResetPage(code=get_reset_code(),
+	 										 user=user,
+	 										 add_date=timezone.now(),
+	 										 used=False)
+	new_page.save()
+	site_domain = get_current_site(request).domain
+	send_mail("Reset Password for Erb Magic League",
+						'Hello,\n\nYou have told us that you have forgotten your password for the Erb Magic League. To reset it, please click here:http://' + 
+						site_domain + "/reset/" + new_page.code + '/\n\nThanks,\n\nErb Magic League',
+						settings.EMAIL_HOST_USER,
+						[user.email], fail_silently=False)
+
+def forgot(request):
+	"""
+	Page for user forgetting their password
+	"""
+	if request.method == 'POST':
+		input = request.POST['input'].lower()
+		if input:
+			if not '@' in input:
+				users = User.objects.filter(username=input)
+				if not users:
+					messages.error(request, "Not a username in existence")
+					return render(request, 'elo_ladder/forgot.html')
+				else:
+					user = users[0]
+			else:
+				users = User.objects.filter(email=input)
+				if not users: 
+					messages.error(request, "Not an e-mail in existence")
+					return render(request, 'elo_ladder/forgot.html')
+				else:
+					user = users[0]
+			send_reset_email(request, user)
+			messages.success(request, "Email has been sent. It should arrive in the next 5 minutes, if it does not, check your spam.")
+			return render(request, 'elo_ladder/forgot.html')
+		else:
+			messages.error(request, "Please enter a username or email.")
+			return render(request, 'elo_ladder/forgot.html')
+	else:
+		return render(request, 'elo_ladder/forgot.html')
+
+def reset(request, reset_code):
+	"""
+	Page for resetting passwords.
+	"""
+	page = get_object_or_404(ResetPage, code=reset_code)
+	if not page.is_active(): raise Http404
+
+	if request.method == 'POST':
+		pw = request.POST['password']
+		confirm_pw = request.POST['password']
+		if not is_valid_entry(pw):
+			messages.error(request, 'Please enter a valid password.')
+			return HttpResponseRedirect(reverse('reset', kwargs={'reset_code': reset_code}))
+		if pw != confirm_pw:
+			messages.error(request, 'The passwords do not match, please try again.')
+			return HttpResponseRedirect(reverse('reset', kwargs={'reset_code': reset_code}))
+
+		user = page.user
+		user.set_password(pw)
+		user.save()
+		page.used = True
+		page.save()
+		messages.success(request, 'Your password has been changed! Please try logging in now with your new password.')
+		return HttpResponseRedirect(reverse('standings'))
+	else:
+		return render(request, 'elo_ladder/reset.html', {'reset_code': reset_code})

@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import timedelta
+from django.utils import timezone
 
 class Player(models.Model):
 	"""
@@ -64,3 +66,28 @@ class Match(models.Model):
 		Returns the rating change that happened from this game (since they are symmetric)
 		"""
 		return int(self.winners_new_elo) - int(self.winners_prev_elo) # Sometimes these fields return doubles, so we cast them as integers
+
+class ResetPage(models.Model):
+	"""
+	Model used to track the reset password pages we create to send to users if they forget their password.
+	"""
+	add_date = models.DateTimeField('date added')
+	user = models.ForeignKey(User, default=0)
+	code = models.TextField(primary_key=True)
+	used = models.BooleanField(default=False)
+
+	def is_active(self):
+		"""
+		If a reset password page has not been used, and isn't older than a day, it is active
+		"""
+		d = timezone.now() - timedelta(days=1)
+		return (not self.used) and (self.add_date > d)
+
+	def __unicode__(self):
+		"""
+		Example: USER - active
+		"""
+		if self.is_active():
+			return user.username + " - active"
+		else:
+			return user.username + " - inactive"

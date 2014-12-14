@@ -1,0 +1,14 @@
+{% extends "elo_ladder/base.html" %}
+
+{% block title %}Forgot Password{% endblock %}
+
+{% block body %}
+  <form id="forgot_form" method="post" action="{% url 'forgot' %}">
+    {% csrf_token %}
+    <div class="input-group input-group-lg">
+      <input name="input" type="text" class="form-control" placeholder="Username or Email">
+    </div>
+    <br />
+    <button type="submit" class="btn btn-lg">Send Email</button>
+  </form>
+{% endblock %}
