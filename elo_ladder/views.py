@@ -73,8 +73,8 @@ def register(request):
 	registered = False
 
 	if request.method == 'POST':
-		info ={"username": request.POST['username'],"password": request.POST['password'], "confirm_password": request.POST['confirm_password'],
-				"email": request.POST['email'],"first_name": request.POST['first_name'],"last_name": request.POST['last_name']}
+		info ={"username": request.POST['username'].lower(),"password": request.POST['password'], "confirm_password": request.POST['confirm_password'],
+				"email": request.POST['email'].lower(),"first_name": request.POST['first_name'],"last_name": request.POST['last_name']}
 		processed_info = is_valid_user(info)
 		if processed_info[0]:
 			new_user = User.objects.create_user(username=info['username'],
@@ -99,7 +99,7 @@ def user_login(request):
 	context = RequestContext(request)
 
 	if request.method == 'POST':
-		username = request.POST['username']
+		username = request.POST['username'].lower()
 		password = request.POST['password']
 
 		user = authenticate(username=username, password=password)
