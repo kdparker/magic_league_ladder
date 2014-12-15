@@ -28,7 +28,7 @@ def rating_change(winner, loser, games):
 
 def is_valid_entry(entry):
 	"""Returns if a given entry is a valid input"""
-	return (entry and len(entry) <= 30 and len(entry) >= 4 and re.match('^[A-Za-z\-_@0-9.]*$', entry))
+	return (entry and len(entry) <= 30 and len(entry) >= 4 and re.match('^[A-Za-z\-_@0-9.\']*$', entry))
 
 def is_valid_user(info):
 	"""Returns if a given user_creation info is valid. If not, gives an appropriate message alongside"""
