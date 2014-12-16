@@ -88,6 +88,6 @@ class ResetPage(models.Model):
 		Example: USER - active
 		"""
 		if self.is_active():
-			return user.username + " - active"
+			return self.user.username + " - active"
 		else:
-			return user.username + " - inactive"
+			return self.user.username + " - inactive"
