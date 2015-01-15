@@ -16,6 +16,7 @@ class Player(models.Model):
 	match_wins = models.IntegerField(default=0)
 	match_losses = models.IntegerField(default=0)
 	elo = models.IntegerField(default=STARTING_RATING)
+	collection = models.TextField(default="")
 
 	def get_name(self):
 		return self.user.first_name + " " + self.user.last_name[0]
@@ -91,3 +92,12 @@ class ResetPage(models.Model):
 			return self.user.username + " - active"
 		else:
 			return self.user.username + " - inactive"
+
+class TradeOffer(models.Model):
+	"""
+	Model used to track pending trade offers
+	"""
+	sender = models.ForeignKey(Player, default=0, related_name="sender")
+	recipient = models.ForeignKey(Player, default=0, related_name="recipient")
+	offered_cards = models.TextField(default="")
+	wanted_cards = models.TextField(default="")

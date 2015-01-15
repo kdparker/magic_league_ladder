@@ -1,6 +1,7 @@
 {% extends "elo_ladder/base.html" %}
 
 {% block title %}Match Reporting{% endblock %}
+{% block report %}class="active"{% endblock %}
 
 {% block body %}
 <form action="{% url 'make_report' %}" method="post">

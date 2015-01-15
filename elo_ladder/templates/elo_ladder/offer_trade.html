@@ -1,0 +1,19 @@
+{% extends "elo_ladder/base.html" %}
+
+{% block title %}Offer Trade{% endblock %}
+
+{% block body %}
+  Separate entries by new lines. If you want to add more than one copy of a given card, put the number you want to add in front of the card.
+  <br /> Ex: <em>3 Black Lotus</em> adds three Black Lotus cards to your collection.
+  <form id="add_cards_form" method="post" action="{% url 'offer_trade' player_id %}">
+    {% csrf_token %}
+    <div class="input-group input-group-lg">
+    <strong> Trading: </strong><br>
+      <TEXTAREA Name="offered" ROWS=10 COLS=20></TEXTAREA><br>
+    <strong> For: </strong><br>
+      <TEXTAREA Name="wanted" ROWS=10 COLS=20></TEXTAREA>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-lg">Offer Trade</button>
+  </form>
+{% endblock %}

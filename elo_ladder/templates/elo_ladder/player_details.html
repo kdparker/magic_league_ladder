@@ -14,6 +14,27 @@
 <strong>Game Record:</strong> {{ player.game_wins }}-{{ player.game_losses }}<br>
 <strong>Win percentage:</strong> {{ player.match_win_percent }}<br>
 <strong>Game Win percentage:</strong>{{ player.game_win_percent }}<br><br>
+{% if user.is_authenticated and player.id != user.player.id %}
+<a href="{% url 'offer_trade' player.id %}"><button type="button" class="btn btn-lg">Trade with {{ player.user.first_name }}</button></a><br><br>
+{% endif %}
+<strong>Collection:</strong><br><br>
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>Quantity</th>
+      <th>Card</th> 
+    </tr>
+  </thead>
+  <tbody>
+    {% for card, quantity in collection %}
+      <tr>
+       <td>{{ quantity }}</td>
+       <td>{{ card }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
 <strong>Match History:</strong><br><br>
 <table class ="table table-striped table-bordered table-hover">
   <thead>

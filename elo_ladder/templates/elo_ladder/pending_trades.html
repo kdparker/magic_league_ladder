@@ -1,0 +1,21 @@
+{% extends "elo_ladder/base.html" %}
+
+{% block title %}Pending Trades{% endblock %}
+{% block pending %}class="active"{% endblock %}
+
+{% block body %}
+<strong>Pending Trades:</strong><br><br>
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+      <th>From:</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for trade in trades %}
+      <tr>
+       <td><a href="{% url 'make_trade' trade.id %}">{{ trade.sender.get_name }}</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

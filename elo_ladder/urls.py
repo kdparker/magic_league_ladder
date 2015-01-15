@@ -12,5 +12,9 @@ urlpatterns = patterns('',
   url(r'^login/$', views.user_login, name='login'),
   url(r'^logout/$', views.user_logout, name='logout'),
   url(r'^forgot/$', views.forgot, name='forgot'),
+  url(r'^update/$', views.update_cards, name='update_cards'),
+  url(r'^offer/(?P<player_id>\d+)/$', views.offer_trade, name='offer_trade'),
+  url(r'^trades/$', views.pending_trades, name='pending_trades'),
+  url(r'^trades/(?P<trade_id>\d+)/$', views.make_trade, name='make_trade'),
   url(r'^reset/(?P<reset_code>\w+)/$', views.reset, name='reset')
 )

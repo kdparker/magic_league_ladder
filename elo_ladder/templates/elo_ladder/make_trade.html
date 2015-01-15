@@ -1,0 +1,24 @@
+{% extends "elo_ladder/base.html" %}
+
+{% block title %}Trade Offer{% endblock %}
+
+{% block body %}
+  <strong>{{ trade.sender.user.first_name }} is offering you:</strong><br><br>
+  <ul>
+  {% for card, quantity in offered %}
+    <li>{{ quantity }} {{ card }}</li>
+  {% endfor %}
+  </ul><br>
+  <strong>For:</strong><br><br>
+  <ul>
+  {% for card, quantity in wanted %}
+    <li>{{ quantity }} {{ card }}</li>
+  {% endfor %}
+  </ul>
+  <form id="tradelogin_form" method="post" action="{% url 'make_trade' trade.id %}">
+    {% csrf_token %}
+    <button name="accept" value="accept" type="submit" class="btn btn-lg">Accept</button>
+    <button name="quit" value="quit" type="submit" class="btn btn-lg">Decline and Quit</button>
+    <button name="counteroffer" value="counteroffer" type="submit" class="btn btn-lg">Decline and Counteroffer</button>
+  </form>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "elo_ladder/base.html" %}
+
+{% block title %}Update Cards{% endblock %}
+{% block update %}class="active"{% endblock %}
+
+{% block body %}
+  Separate entries by new lines. If you want to add more than one copy of a given card, put the number you want to add in front of the card (these numbers can also be negative).
+  <br /> Ex: <em>3 Black Lotus</em> adds three Black Lotus cards to your collection, while <em>-2 Black Lotus</em> removes two of them
+  <form id="add_cards_form" method="post" action="{% url 'update_cards' %}">
+    {% csrf_token %}
+    <div class="input-group input-group-lg">
+      <TEXTAREA Name="additions" ROWS=10 COLS=20></TEXTAREA>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-lg">Update Cards</button>
+  </form>
+{% endblock %}

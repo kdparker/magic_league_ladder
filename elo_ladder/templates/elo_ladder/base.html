@@ -27,7 +27,11 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            {% if user.is_authenticated %}<li><a href="{% url 'report' %}">Report</a></li>{% endif %}
+            {% if user.is_authenticated %}
+            <li {% block report %}{% endblock %}><a href="{% url 'report' %}">Report</a></li>
+            <li {% block update %}{% endblock %}><a href="{% url 'update_cards' %}">Update Cards</a></li>
+            <li {% block pending %}{% endblock %}><a href="{% url 'pending_trades' %}">Trade Offers</a></li>
+            {% endif %}
             <li {% block history %}{% endblock %}><a href="{% url 'history' %}">Match History</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
