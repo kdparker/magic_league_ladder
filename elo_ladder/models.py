@@ -16,7 +16,7 @@ class Player(models.Model):
 	match_wins = models.IntegerField(default=0)
 	match_losses = models.IntegerField(default=0)
 	elo = models.IntegerField(default=STARTING_RATING)
-	collection = models.TextField(default="")
+	collection = models.TextField(default="", blank=True)
 
 	def get_name(self):
 		return self.user.first_name + " " + self.user.last_name[0]
@@ -99,5 +99,5 @@ class TradeOffer(models.Model):
 	"""
 	sender = models.ForeignKey(Player, default=0, related_name="sender")
 	recipient = models.ForeignKey(Player, default=0, related_name="recipient")
-	offered_cards = models.TextField(default="")
-	wanted_cards = models.TextField(default="")
+	offered_cards = models.TextField(default="", blank=True)
+	wanted_cards = models.TextField(default="", blank=True)
